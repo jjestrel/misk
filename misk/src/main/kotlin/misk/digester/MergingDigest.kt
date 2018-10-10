@@ -1,7 +1,7 @@
 package misk.digester
 
-import tdigest.Centroid
-import tdigest.MergingDigestData
+import com.squareup.digester.protos.tdigest.Centroid
+import com.squareup.digester.protos.tdigest.MergingDigestData
 import kotlin.math.PI
 import kotlin.math.asin
 
@@ -11,35 +11,27 @@ import kotlin.math.asin
  * Direct port of Veneur digest created by Stripe
  * https://github.com/stripe/veneur/blob/master/tdigest/merging_digest.go
  */
-class MergingDigest {
-
-  // amount of compression to data
-  private val compression: Double
+class MergingDigest(private val compression: Double) {
 
   // main list of centroids
-  private var mainCentroids: MutableList<Centroid> = mutableListOf()
+  private val mainCentroids: MutableList<Centroid> = mutableListOf()
   // total weight of unmerged main centroids
   private var mainWeight: Double = 0.0
 
   // centroids that have been added but not yet merged into main list
-  private var tempCentroids: MutableList<Centroid> = mutableListOf()
+  private val tempCentroids: MutableList<Centroid> = mutableListOf()
   // total weight of unmerged temp centroids
   private var tempWeight: Double = 0.0
 
   private var min: Double = Double.POSITIVE_INFINITY
   private var max: Double = Double.NEGATIVE_INFINITY
 
-  constructor(compression: Double) {
-    this.compression = compression
-  }
-
   /**
    * Constructs a MergingDigest with values initialized from MergingDigestData.
    * This should be the way to generate a MergingDigest from a serialized protobuf.
    */
-  constructor(mergingDigestData: MergingDigestData) {
-    compression = mergingDigestData.compression
-    mainCentroids = mergingDigestData.main_centroids.toMutableList()
+  constructor(mergingDigestData: MergingDigestData): this(mergingDigestData.compression) {
+    mainCentroids.addAll(mergingDigestData.main_centroids)
     min = mergingDigestData.min
     max = mergingDigestData.max
 
@@ -72,7 +64,7 @@ class MergingDigest {
     }
 
     if (tempCentroids.size == estimateTempBuffer(compression)) {
-          mergeAllTemps()
+      mergeAllTemps()
     }
 
     min = minOf(min, value)
@@ -114,7 +106,7 @@ class MergingDigest {
     // since we will be merging in-place into td.mainCentroids, we need to keep
     // track of the indices of the remaining elements
     var actualMainCentroids = mainCentroids.toMutableList()
-    mainCentroids = mainCentroids.subList(0, 0) //this should be clear list
+    mainCentroids.clear()
     // to facilitate the in-place merge, we will need a place to store the main
     // centroids that would be overwritten - we will use space from the start
     // of tempCentroids for this

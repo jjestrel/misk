@@ -1,7 +1,7 @@
 package misk.digester
 
-import digester.DigestData
-import tdigest.MergingDigestData
+import com.squareup.digester.protos.service.DigestData
+import com.squareup.digester.protos.tdigest.MergingDigestData
 import okio.ByteString.Companion.toByteString
 
 /**

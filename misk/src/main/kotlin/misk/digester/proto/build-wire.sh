@@ -6,11 +6,11 @@
 # proper gradle support
 # Build protos captured in test resources
 java -jar ~/Downloads/wire-compiler-2.3.0-RC1-jar-with-dependencies.jar \
-	--proto_path=src/main/java/tdigest \
-	--java_out=src/main/kotlin/ \
+	--proto_path=src/main/java/com/squareup/digester/protos/tdigest \
+	--java_out=src/main/java/ \
 	tdigest.proto
 
 java -jar ~/Downloads/wire-compiler-2.3.0-RC1-jar-with-dependencies.jar \
-	--proto_path=src/main/java/digester \
-	--java_out=src/main/kotlin/ \
+	--proto_path=src/main/java/com/squareup/digester/protos/service/ \
+	--java_out=src/main/java/ \
 	service.proto
